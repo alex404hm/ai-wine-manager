@@ -1,0 +1,93 @@
+[
+    {
+        "image": "images/CPyk3gwTRCujmo1U2bfkVw.jpg",
+        "wine_name": "GEVREY-CHAMBERTIN Les Crais",
+        "type": "Red",
+        "vintage": 2019,
+        "producer": "Jean-Michel Guillon",
+        "grape": "Pinot Noir",
+        "classification": "Appellation d'Origine Contrôlée",
+        "region": "Gevrey-Chambertin, Burgundy"
+    },
+    {
+        "wine_name": "Château Margaux",
+        "type": "Red",
+        "vintage": 2018,
+        "producer": "Château Margaux",
+        "grape": "Cabernet Sauvignon, Merlot",
+        "classification": "Grand Cru Classé",
+        "region": "Bordeaux, France"
+    },
+    {
+        "wine_name": "Domaine de la Romanée-Conti La Tâche",
+        "type": "Red",
+        "vintage": 2017,
+        "producer": "DRC",
+        "grape": "Pinot Noir",
+        "classification": "Grand Cru",
+        "region": "Vosne-Romanée, Burgundy"
+    },
+    {
+        "wine_name": "Sancerre Les Monts Damnés",
+        "type": "White",
+        "vintage": 2020,
+        "producer": "Domaine Vacheron",
+        "grape": "Sauvignon Blanc",
+        "classification": "Appellation d'Origine Contrôlée",
+        "region": "Sancerre, Loire Valley"
+    },
+    {
+        "wine_name": "Moët & Chandon Brut Impérial",
+        "type": "Sparkling",
+        "vintage": null,
+        "producer": "Moët & Chandon",
+        "grape": "Chardonnay, Pinot Noir, Pinot Meunier",
+        "classification": "Champagne",
+        "region": "Champagne, France"
+    },
+    {
+        "wine_name": "Riesling Trocken",
+        "type": "White",
+        "vintage": 2021,
+        "producer": "Dr. Loosen",
+        "grape": "Riesling",
+        "classification": "Qualitätswein",
+        "region": "Mosel, Germany"
+    },
+    {
+        "wine_name": "Barolo Cannubi",
+        "type": "Red",
+        "vintage": 2016,
+        "producer": "Giuseppe Mascarello",
+        "grape": "Nebbiolo",
+        "classification": "DOCG",
+        "region": "Piedmont, Italy"
+    },
+    {
+        "wine_name": "Chablis Grand Cru Les Clos",
+        "type": "White",
+        "vintage": 2019,
+        "producer": "Domaine William Fèvre",
+        "grape": "Chardonnay",
+        "classification": "Grand Cru",
+        "region": "Chablis, Burgundy"
+    },
+    {
+        "wine_name": "Champagne Bollinger Special Cuvée",
+        "type": "Sparkling",
+        "vintage": null,
+        "producer": "Bollinger",
+        "grape": "Chardonnay, Pinot Noir, Pinot Meunier",
+        "classification": "Champagne",
+        "region": "Champagne, France"
+    },
+    {
+        "wine_name": "Albariño Rías Baixas",
+        "type": "White",
+        "vintage": 2022,
+        "producer": "Pazo de Señorans",
+        "grape": "Albariño",
+        "classification": "Denominación de Origen",
+        "region": "Rías Baixas, Spain"
+    }
+]
