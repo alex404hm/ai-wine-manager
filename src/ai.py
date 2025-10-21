@@ -4,23 +4,32 @@ import json
 from dotenv import load_dotenv
 import os
 
-
 ## API KEYS
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 
 
+## Create data folder if not exists
+if os.path.exists('./data'):
+    print("Data is already created!")
+else:
+    os.mkdir('./data')
+    
+    
 
+
+## OpenAI Configuration
 client = OpenAI(api_key=api_key)
 
-# Function to encode the image
+
+## Encode the image
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode("utf-8")
 
 
 # Path to your image
-image_path = "CPyk3gwTRCujmo1U2bfkVw.jpg"
+image_path = "image.jpg"
 
 # Getting the Base64 string
 base64_image = encode_image(image_path)
@@ -58,5 +67,5 @@ Always include all fields; use null for any information that is not visible. Ens
 
 data_string = response.output_text
 data = json.loads(data_string)
-with open('data.json', "w", encoding="utf-8") as f:
+with open('./data/data.json', "w", encoding="utf-8") as f:
     json.dump(data, f, indent=4, ensure_ascii=False)

@@ -1,5 +1,5 @@
 document.getElementById("table").style.display = "block";
-fetch("data/data.json")
+fetch("/api/v1/wines")
 .then(function(response){
   return response.json();
 })
@@ -11,7 +11,6 @@ fetch("data/data.json")
   for(let product of products){
       out += `
          <tr>
-            <td> <img src='${product.image}'> </td>
             <td>${product.wine_name}</td>
             <td>${product.type}</td>
             <td>${product.vintage}</td>
