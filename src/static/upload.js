@@ -25,3 +25,18 @@ form.addEventListener("submit", function(e) {
         input.value = "";
     }
 });
+
+// /api/v1/ai
+function getWine() {
+const url = 'http://127.0.0.1:5000/api/v1/ai';
+const formData = new FormData();
+formData.append('image', document.getElementById('image-input').files[0]);
+
+fetch(url, {
+  method: 'POST',
+  body: formData
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error(error));
+}
