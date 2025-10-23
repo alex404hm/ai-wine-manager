@@ -11,13 +11,14 @@ fetch("/api/v1/wines")
   for(let product of products){
       out += `
          <tr>
+            <td><img src="${product.image_src}"></td>
             <td>${product.wine_name}</td>
             <td>${product.type}</td>
             <td>${product.vintage}</td>
             <td>${product.producer}</td>
             <td>${product.grape}</td>
             <td>${product.classification}</td>
-            <td>${product.region}</td>
+            <td>${product.region} <button onclick="deleteWine({id})">Click me</button></td>
          </tr>
       `;
    }

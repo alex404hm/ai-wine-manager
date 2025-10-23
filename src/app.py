@@ -1,4 +1,4 @@
-from flask import render_template, Flask, request, jsonify
+from flask import render_template, Flask, request, jsonify, send_from_directory
 from distutils.log import debug
 from fileinput import filename
 from werkzeug.utils import secure_filename
@@ -6,6 +6,9 @@ import json
 import os
 from openai import OpenAI
 import base64
+from PIL import Image
+import uuid
+
 
 app = Flask(__name__)
 
@@ -25,11 +28,17 @@ def home():
 ## Upload Page
 @app.route('/upload', methods = ['GET', 'POST'])
 def upload():
+    global last_uploaded_filename
     if request.method == 'POST':
         f = request.files['file']
-        filename = secure_filename(f.filename)
-        f.save(os.path.join(app.config['UPLOAD_FOLDER'], f.filename))
+        uuid_str = str(uuid.uuid4())
+        f.filename = f"{uuid_str}.jpg"
+        img = Image.open(f)
+        img = img.convert('RGB')
+        img.save(f"{UPLOAD_FOLDER}/{f.filename}", format='JPEG')
+        last_uploaded_filename = f.filename
     return render_template('upload.html')
+
 
 
 
@@ -49,20 +58,18 @@ def analyse_image():
                 {
                     "role": "user",
                     "content": [
-                        {"type": "input_text", "text": """
-                         Analyze the image of wine bottles and return the results only in valid JSON format — no extra text or explanations.
+                        {"type": "input_text", "text": f"""
+  Analyze the wine bottles in this image and return the results strictly in JSON format, with no extra text or explanations. For each bottle, include the following fields exactly as shown on the label or inferred if visible:
+  - "image_src": "uploads/{last_uploaded_filename}"
+- "wine_name": the full name of the wine exactly as on the label
+- "type": the wine type (e.g., Red, White, Rosé, Sparkling)
+- "vintage": the year of production, or null if not visible
+- "producer": the producer or winery name
+- "grape": the grape variety or blend
+- "classification": any quality designation (eg. Grand Cru)
+- "region": the wine’s region or country of origin
 
-For each bottle, include these exact fields:
-- "wine_name": full name of the wine as on the label
-- "type": wine type (Red, White, Rosé, or Sparkling)
-- "vintage": year of production, or null if not visible
-- "producer": winery or producer name
-- "grape": grape variety or blend
-- "classification": quality designation (e.g., Grand Cru), or null
-- "region": region or country of origin
-
-Always include all fields for each bottle, using null if the information is missing.
-The output must be a properly formatted JSON array with no text outside the JSON.
+Always include all fields; use null for any information that is not visible. Ensure the JSON is properly formatted and ready for parsing, without any extra text outside of the JSON array. and Please DO NOT MAKE THE square brackets []
 
                          """},
                         {"type": "input_image", "image_url": f"data:image/jpeg;base64,{base64_image}"}
@@ -70,11 +77,21 @@ The output must be a properly formatted JSON array with no text outside the JSON
                 }
             ]
         )
-        
+        raw_output = response.output_text.strip()
+        if not raw_output:
+            ai_data = []
+        else:
+            ai_data = json.loads(raw_output)
+            
+            
         data_string = response.output_text
         data = json.loads(data_string)
+            ## Load the data file
+        with open('./data/data.json', "r", encoding="utf-8") as file:
+            data13 = json.load(file)
+            data13.append(data)
         with open('./data/data.json', "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=4, ensure_ascii=False)
+            json.dump(data13, f, indent=4, ensure_ascii=False)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     return jsonify({"analysis": response.output_text})
@@ -104,13 +121,31 @@ def get_wines():
                 data = json.load(f)
         else:
             data = []
-
         data.append(new_wine)
-
         with open(DATA_FILE, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
-
+            
         return "New wine added successfully!", 201
+
+@app.route('/api/v1/wines/<int:id>', methods=['DELETE'])
+def delete_wine(id):
+    with open("data/data.json", "r") as file:
+        data = json.load(file)
+        if isinstance(data, dict):
+            data = [data]
+    for wine in data:
+        if wine['id'] == id:
+            data.remove(wine)
+        with open("data/data.json", "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4, ensure_ascii=False)
+            return jsonify(message="Wine deleted successfully"), 200
+        return jsonify(error="User not found"), 404
+
+    
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

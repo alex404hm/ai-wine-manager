@@ -3,26 +3,35 @@ const input = document.getElementById("image-input");
 const errorMessage = document.getElementById("error-message");
 const succesMessage = document.getElementById("succes-message");
 
-form.addEventListener("submit", function(e) {
+form.addEventListener("submit", async function(e) {
+    e.preventDefault();
     const file = input.files[0];
     if (!file) return; 
 
-    const allowedTypes = ["image/jpeg", "image/png"];
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
 
     if (!allowedTypes.includes(file.type)) {
-        e.preventDefault();
-        errorMessage.textContent = "Error: Only JPG, PNG files are allowed!";
+        errorMessage.textContent = "Error: Only JPG, PNG, GIF files are allowed!";
         errorMessage.style.color = "red";
         input.value = "";
-    } else {
-        errorMessage.textContent = "";
+        return;
     }
 
-    if (allowedTypes.includes(file.type)) {
-        e.preventDefault();
-        errorMessage.textContent = "Succesfully. Image uploaded";
-        errorMessage.style.color = "green";
-        input.value = "";
+    // upload to /upload
+    const fd = new FormData(form);
+    try {
+      const res = await fetch('/upload', { method: 'POST', body: fd });
+      if (!res.ok) throw new Error('Upload failed');
+      succesMessage.textContent = "Successfully uploaded";
+      succesMessage.style.color = "green";
+
+      // optionally call AI after saving:
+      // getWine(); 
+    } catch (err) {
+      errorMessage.textContent = err.message || 'Upload error';
+      errorMessage.style.color = "red";
+    } finally {
+      input.value = "";
     }
 });
 
