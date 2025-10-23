@@ -1,38 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Wine Management</title>
-    <link rel="stylesheet" href="./static/styles.css">
-</head>
-<body>
-        <h1>Upload an Image</h1>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              wine: {
+                dark: "#8b0000",
+                light: "#b22e2e",
+                bg: "#7B2626",
+              },
+            },
+          },
+        },
+      };
+    </script>
+  </head>
 
-    <p id="error-message"></p>
-    <p id="succes-message"></p>
+  <body class="bg-[#1a1a1a] text-gray-100 font-sans min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      <!-- Upload Section -->
+      <h1 class="text-4xl font-semibold text-center text-wine-light mb-8">
+        Upload an Image
+      </h1>
 
-    <form id="upload-form" method="POST" enctype="multipart/form-data" action="/dashboard">
-        <input type="file" name="file" id="image-input" accept=".jpg,.jpeg,.png" required>
-        <button type="submit" onclick="getWine()">Upload</button>
-    </form>
-    <script src="./static/upload.js"></script>
-    <h1>Wine Cellar Management</h1>
-    <table style="display: none;" id="table">
-        <thead>
-            <th>Image</th>
-            <th>Wine Name</th>
-            <th>Type</th>
-            <th>Vintage (Year)</th>
-            <th>Producer</th>
-            <th>Grape</th>
-            <th>Classification</th>
-            <th>Region</th>
-        </thead>
-        <tbody id="data-output">
+      <p id="error-message" class="text-center font-semibold mb-4"></p>
+      <p id="succes-message" class="text-center font-semibold mb-4"></p>
 
-        </tbody>
-    </table>
-    <script src="./static/script.js"></script>
-</body>
+      <form
+        id="upload-form"
+        method="POST"
+        enctype="multipart/form-data"
+        action="/dashboard"
+        class="bg-[#242424] p-8 rounded-xl shadow-2xl max-w-2xl mx-auto mb-12 flex flex-col items-center gap-4"
+      >
+        <input
+          type="file"
+          name="file"
+          id="image-input"
+          accept=".jpg,.jpeg,.png"
+          required
+          class="block w-full text-gray-300 bg-[#2b2b2b] border border-gray-700 rounded-lg cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-wine-dark file:text-white hover:file:bg-wine-light file:cursor-pointer transition"
+        />
+        <button
+          type="submit"
+          class="bg-[#F4C430] hover:bg-[#E6B800] text-[#1a1a1a] font-semibold py-3 px-6 rounded-lg transition transform hover:-translate-y-0.5"
+        >
+          Upload
+        </button>
+      </form>
+
+      <script src="./static/upload.js"></script>
+
+      <!-- Wine Collection Table -->
+      <h1 class="text-4xl font-semibold text-center text-wine-light mb-8">
+        Wine Cellar Management
+      </h1>
+
+      <div class="overflow-x-auto">
+        <table
+          id="table"
+          class="hidden w-full bg-[#242424] rounded-xl overflow-hidden shadow-2xl"
+        >
+          <thead class="bg-wine-dark">
+            <tr>
+              <th
+                class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider text-white"
+              >
+                Image
+              </th>
+              <th
+                class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider text-white"
+              >
+                Wine Name
+              </th>
+              <th
+                class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider text-white"
+              >
+                Type
+              </th>
+              <th
+                class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider text-white"
+              >
+                Vintage (Year)
+              </th>
+              <th
+                class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider text-white"
+              >
+                Producer
+              </th>
+              <th
+                class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider text-white"
+              >
+                Grape
+              </th>
+              <th
+                class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider text-white"
+              >
+                Classification
+              </th>
+              <th
+                class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider text-white"
+              >
+                Region
+              </th>
+            </tr>
+          </thead>
+          <tbody id="data-output" class="divide-y divide-gray-700"></tbody>
+        </table>
+      </div>
+
+      <script src="./static/script.js"></script>
+    </div>
+  </body>
 </html>

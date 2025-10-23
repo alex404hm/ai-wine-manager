@@ -1,15 +1,20 @@
+// DOM Element References
 const form = document.getElementById("upload-form");
 const input = document.getElementById("image-input");
 const errorMessage = document.getElementById("error-message");
 const succesMessage = document.getElementById("succes-message");
 
+// Allowed file types
+const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+
+// Form submit handler
 form.addEventListener("submit", async function(e) {
     e.preventDefault();
+    
     const file = input.files[0];
     if (!file) return; 
 
-    const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
-
+    // Validate file type
     if (!allowedTypes.includes(file.type)) {
         errorMessage.textContent = "Error: Only JPG, PNG, GIF files are allowed!";
         errorMessage.style.color = "red";
@@ -17,33 +22,35 @@ form.addEventListener("submit", async function(e) {
         return;
     }
 
-    // upload to /upload
-    const fd = new FormData(form);
     try {
-      const res = await fetch('/dashboard', { method: 'POST', body: fd });
-      if (!res.ok) throw new Error('Upload failed');
-      succesMessage.textContent = "Successfully uploaded";
-      succesMessage.style.color = "green";
+        // Step 1: Upload the file
+        const formData = new FormData(form);
+        const uploadRes = await fetch('/dashboard', { method: 'POST', body: formData });
+        if (!uploadRes.ok) throw new Error('Upload failed');
+        
+        const uploadData = await uploadRes.json();
+        const filename = uploadData.filename;
+        
+        succesMessage.textContent = "Uploaded successfully, analyzing...";
+        succesMessage.style.color = "green";
+        
+        // Step 2: Analyze the image with AI
+        const analyzeFormData = new FormData();
+        analyzeFormData.append('image', file);
+        analyzeFormData.append('filename', filename);
+        
+        const analyzeRes = await fetch('/api/v1/ai', { method: 'POST', body: analyzeFormData });
+        if (!analyzeRes.ok) throw new Error('Analysis failed');
+        
+        const analyzeData = await analyzeRes.json();
+        succesMessage.textContent = "Wine analyzed successfully!";
+        succesMessage.style.color = "green";
+        
+        input.value = "";
 
-      // optionally call AI after saving:
-      // getWine(); 
     } catch (err) {
-      errorMessage.textContent = err.message || 'Upload error';
-      errorMessage.style.color = "red";
-    } finally {
-      input.value = "";
+        errorMessage.textContent = "Error: " + (err.message || 'Something went wrong');
+        errorMessage.style.color = "red";
+        input.value = "";
     }
 });
-
-// /api/v1/ai
-function getWine() {
-const url = 'http://127.0.0.1:5000/api/v1/ai';
-const formData = new FormData();
-formData.append('image', document.getElementById('image-input').files[0]);
-
-fetch(url, {
-  method: 'POST',
-  body: formData
-})
-.then(response => response.json())
-}
