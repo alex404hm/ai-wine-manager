@@ -1,8 +1,12 @@
 document.getElementById("table").style.display = "block";
-fetch("/api/v1/wines")
-.then(function(response){
-  return response.json();
+
+async function fetchData() {
+   fetch("/api/v1/wines")
+   .then(function(response){
+      return response.json();
 })
+
+
 
 .then(function(products){
   let placeholder = document.querySelector("#data-output");
@@ -18,9 +22,12 @@ fetch("/api/v1/wines")
             <td>${product.producer}</td>
             <td>${product.grape}</td>
             <td>${product.classification}</td>
-            <td>${product.region} <button onclick="deleteWine({id})">Click me</button></td>
+            <td>${product.region}</td>
          </tr>
       `;
    }
    placeholder.innerHTML = out;
-})
+})}
+
+fetchData();
+setInterval(fetchData, 1000);

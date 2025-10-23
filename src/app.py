@@ -13,41 +13,44 @@ import uuid
 app = Flask(__name__)
 
 DATA_FILE = "data/data.json"
-UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
+last_uploaded_filename = None  # Initialize as global variable
+
 
 ## Wine Dashboard
-@app.route('/')
+@app.route("/dashboard", methods=["GET", "POST"])
 def home():
-    return render_template('index.html')
-
-## Upload Page
-@app.route('/upload', methods = ['GET', 'POST'])
-def upload():
-    global last_uploaded_filename
-    if request.method == 'POST':
-        f = request.files['file']
+    global last_uploaded_filename  # Declare as global
+    if request.method == "GET":
+        return render_template("index.html")
+    elif request.method == "POST":
+        f = request.files["file"]
         uuid_str = str(uuid.uuid4())
         f.filename = f"{uuid_str}.jpg"
         img = Image.open(f)
-        img = img.convert('RGB')
-        img.save(f"{UPLOAD_FOLDER}/{f.filename}", format='JPEG')
+        img = img.convert("RGB")
+        img.save(f"{UPLOAD_FOLDER}/{f.filename}", format="JPEG")
         last_uploaded_filename = f.filename
-    return render_template('upload.html')
+        return jsonify({"filename": f.filename}), 200  # Return response
 
 
+## Landing Page
+@app.route("/")
+def landing():
+    return render_template("landing.html")    
 
-
-@app.route('/api/v1/ai', methods=['POST'])
+@app.route("/api/v1/ai", methods=["POST"])
 def analyse_image():
-    if 'image' not in request.files:
+    global last_uploaded_filename  # Declare as global
+    if "image" not in request.files:
         return jsonify({"error": "No image uploaded"}), 400
 
-    image_file = request.files['image']
+    image_file = request.files["image"]
 
     base64_image = base64.b64encode(image_file.read()).decode("utf-8")
 
@@ -58,7 +61,9 @@ def analyse_image():
                 {
                     "role": "user",
                     "content": [
-                        {"type": "input_text", "text": f"""
+                        {
+                            "type": "input_text",
+                            "text": f"""
   Analyze the wine bottles in this image and return the results strictly in JSON format, with no extra text or explanations. For each bottle, include the following fields exactly as shown on the label or inferred if visible:
   - "image_src": "uploads/{last_uploaded_filename}"
 - "wine_name": the full name of the wine exactly as on the label
@@ -71,37 +76,39 @@ def analyse_image():
 
 Always include all fields; use null for any information that is not visible. Ensure the JSON is properly formatted and ready for parsing, without any extra text outside of the JSON array. and Please DO NOT MAKE THE square brackets []
 
-                         """},
-                        {"type": "input_image", "image_url": f"data:image/jpeg;base64,{base64_image}"}
-                    ]
+                         """,
+                        },
+                        {
+                            "type": "input_image",
+                            "image_url": f"data:image/jpeg;base64,{base64_image}",
+                        },
+                    ],
                 }
-            ]
+            ],
         )
         raw_output = response.output_text.strip()
         if not raw_output:
             ai_data = []
         else:
             ai_data = json.loads(raw_output)
-            
-            
+
         data_string = response.output_text
         data = json.loads(data_string)
-            ## Load the data file
-        with open('./data/data.json', "r", encoding="utf-8") as file:
+        ## Load the data file
+        with open("./data/data.json", "r", encoding="utf-8") as file:
             data13 = json.load(file)
             data13.append(data)
-        with open('./data/data.json', "w", encoding="utf-8") as f:
+        with open("./data/data.json", "w", encoding="utf-8") as f:
             json.dump(data13, f, indent=4, ensure_ascii=False)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     return jsonify({"analysis": response.output_text})
 
 
-
 ## DATA API
-@app.route('/api/v1/wines', methods=['GET', 'POST'])
+@app.route("/api/v1/wines", methods=["GET", "POST"])
 def get_wines():
-    if request.method == 'GET':
+    if request.method == "GET":
         if os.path.exists(DATA_FILE):
             with open(DATA_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)
@@ -109,11 +116,11 @@ def get_wines():
             data = []
         return jsonify(data)
 
-    elif request.method == 'POST':
+    elif request.method == "POST":
         if not request.is_json:
             return "Request must be JSON", 400
 
-        new_wine = request.get_json() 
+        new_wine = request.get_json()
         print("Received new wine:", new_wine)
 
         if os.path.exists(DATA_FILE):
@@ -124,27 +131,13 @@ def get_wines():
         data.append(new_wine)
         with open(DATA_FILE, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
-            
+
         return "New wine added successfully!", 201
 
-@app.route('/api/v1/wines/<int:id>', methods=['DELETE'])
-def delete_wine(id):
-    with open("data/data.json", "r") as file:
-        data = json.load(file)
-        if isinstance(data, dict):
-            data = [data]
-    for wine in data:
-        if wine['id'] == id:
-            data.remove(wine)
-        with open("data/data.json", "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=4, ensure_ascii=False)
-            return jsonify(message="Wine deleted successfully"), 200
-        return jsonify(error="User not found"), 404
 
-    
-@app.route('/uploads/<filename>')
+@app.route("/uploads/<filename>")
 def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    return send_from_directory("uploads", filename)
 
 
 if __name__ == "__main__":

@@ -20,7 +20,7 @@ form.addEventListener("submit", async function(e) {
     // upload to /upload
     const fd = new FormData(form);
     try {
-      const res = await fetch('/upload', { method: 'POST', body: fd });
+      const res = await fetch('/dashboard', { method: 'POST', body: fd });
       if (!res.ok) throw new Error('Upload failed');
       succesMessage.textContent = "Successfully uploaded";
       succesMessage.style.color = "green";
@@ -46,6 +46,4 @@ fetch(url, {
   body: formData
 })
 .then(response => response.json())
-.then(data => console.log(data))
-.catch(error => console.error(error));
 }

@@ -7,6 +7,16 @@
     <link rel="stylesheet" href="./static/styles.css">
 </head>
 <body>
+        <h1>Upload an Image</h1>
+
+    <p id="error-message"></p>
+    <p id="succes-message"></p>
+
+    <form id="upload-form" method="POST" enctype="multipart/form-data" action="/dashboard">
+        <input type="file" name="file" id="image-input" accept=".jpg,.jpeg,.png" required>
+        <button type="submit" onclick="getWine()">Upload</button>
+    </form>
+    <script src="./static/upload.js"></script>
     <h1>Wine Cellar Management</h1>
     <table style="display: none;" id="table">
         <thead>
