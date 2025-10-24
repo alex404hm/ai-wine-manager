@@ -43,32 +43,29 @@ For each wine bottle, the AI identifies:
 
 3. **Install dependencies**
    ```bash
-   pip install flask pillow openai python-dotenv
+   pip install -r requirements.txt
    ```
 
 4. **Set up environment variables**
    
    Create a `.env` file in the root directory:
    ```env
-   OPENAI_API_KEY=your_openai_api_key_here
-   DATA_FILE=src/data/data.json
-   UPLOAD_FOLDER=src/uploads
-   AI_MODEL=gpt-4-vision-preview
+   OPENAI_API_KEY="your_openai_api_key_here"
+   DATA_FILE="data/data.json"
+   UPLOAD_FOLDER="uploads"
+   AI_MODEL="gpt-4o"
    ```
+   
+   **Note**: Paths are relative to the `src/` directory
 
-5. **Create required directories**
+5. **Run the application**
    ```bash
-   mkdir -p src/data src/uploads
-   echo "[]" > src/data/data.json
+   python main.py
    ```
+   
+   The app will automatically create required folders and initialize the database.
 
-6. **Run the application**
-   ```bash
-   cd src
-   python app.py
-   ```
-
-7. **Open your browser**
+6. **Open your browser**
    
    Navigate to `http://localhost:5000`
 
@@ -76,22 +73,25 @@ For each wine bottle, the AI identifies:
 
 ```
 wine/
-├── src/
-│   ├── app.py                 # Flask application
-│   ├── data/
-│   │   └── data.json         # Wine collection database
-│   ├── static/
-│   │   ├── script.js         # Wine data display logic
-│   │   ├── upload.js         # Upload handling
-│   │   └── styles.css        # Custom styles (minimal)
-│   ├── templates/
-│   │   ├── landing.html      # Landing page
-│   │   └── index.html        # Dashboard
-│   └── uploads/              # Uploaded wine images
-├── .env                      # Environment variables
+├── main.py               # Main entry point
+├── requirements.txt      # Python dependencies
+├── .env                 # Environment variables (not in git)
 ├── .gitignore
 ├── README.md
-└── TODO.md                   # Feature roadmap
+├── TODO.md
+├── SETUP.md             # Setup instructions
+└── src/
+    ├── app.py           # Flask application
+    ├── data/
+    │   └── data.json    # Wine collection database
+    ├── static/
+    │   ├── script.js    # Wine data display logic
+    │   ├── upload.js    # Upload handling
+    │   └── styles.css   # Custom styles (minimal)
+    ├── templates/
+    │   ├── landing.html # Landing page
+    │   └── index.html   # Dashboard
+    └── uploads/         # Uploaded wine images
 ```
 
 ## 🎨 Tech Stack
@@ -113,10 +113,10 @@ wine/
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `OPENAI_API_KEY` | Your OpenAI API key | `sk-...` |
-| `DATA_FILE` | Path to JSON database | `src/data/data.json` |
-| `UPLOAD_FOLDER` | Directory for uploads | `src/uploads` |
-| `AI_MODEL` | OpenAI model to use | `gpt-4-vision-preview` |
+| `OPENAI_API_KEY` | Your OpenAI API key | `"sk-..."` |
+| `DATA_FILE` | Path to JSON database (relative to src/) | `"data/data.json"` |
+| `UPLOAD_FOLDER` | Directory for uploads (relative to src/) | `"uploads"` |
+| `AI_MODEL` | OpenAI model to use | `"gpt-4o"` |
 
 ## 📖 Usage
 

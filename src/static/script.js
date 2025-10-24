@@ -22,6 +22,7 @@ async function fetchData() {
                   <td class="px-6 py-4">${product.grape}</td>
                   <td class="px-6 py-4">${product.classification}</td>
                   <td class="px-6 py-4">${product.region}</td>
+      <button onclick="deleteWine('${product.id}')">Delete Wine</button>
                </tr>
             `;
          }
@@ -29,8 +30,24 @@ async function fetchData() {
       });
 }
 
-// Fetch data immediately on page load
 fetchData();
 
-// Auto-refresh every 10 seconds
 setInterval(fetchData, 10000);
+
+async function deleteWine(wineId) {
+  try {
+    const response = await fetch(`/api/v1/wines/${wineId}`, {
+      method: "DELETE"
+    });
+
+    if (response.ok) {
+      fetchData();
+    } else {
+      console.error("Failed to delete wine. Status:", response.status);
+         placeholder.innerHTML = out;
+
+    }
+  } catch (error) {
+    console.error("Error while deleting wine:", error);
+  }
+}
